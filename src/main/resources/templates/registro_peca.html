@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--esse comando é responsavel para que o CSS responsivo funcione-->
+    <title>Cadastrar Peças - Syncro!</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"> <!--Aqui é a referncia interna do framework Bootstrap-->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+</head>
+
+<body class="bg-primary">
+
+<nav class="navbar d-md-none navbar-dark px-3">
+    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMobile">☰</button>
+    <span class="navbar-brand">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </span>
+</nav>
+
+<!-- MENU DESKTOP -->
+<aside class="sidebar-fixed d-none d-md-flex flex-column justify-content-between bg-white border-end p-3">
+    <div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </div>
+        <br>
+        <ul class="nav nav-pills flex-column gap-1 mt-4">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+    </div>
+
+
+    <div class="border-top small d-flex align-items-center justify-content-between px-2 pt-2 mt-3">
+        <div class="me-2">
+            <div class="fw-semibold">
+                <span class="me-1">👤</span>
+                <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+</aside>
+
+<!-- MENU MOBILE -->
+<aside class="offcanvas offcanvas-start" tabindex="-1" id="menuMobile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column h-100">
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top small">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="fw-semibold">
+                        <span class="me-1">👤</span>
+                        <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="content-wrap pt-3">
+    <section class="d-none d-xl-block"> <!-- sessão do desktop -->
+        <div class="container-fluid">
+
+            <div class="card shadow-lg bg-light p-4 mb-3">
+
+                <div th:if="${ok}"   class="alert alert-success" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger"  th:text="${erro}"></div>
+                <div th:if="${info}" class="alert alert-info"    th:text="${info}"></div>
+
+                <h2 class="mb-3">Digite a Placa</h2>
+
+                <div class="d-flex flex-column gap-2 w-15 mt-1 mb-3">
+                    <input id="placaInput" class="form-control mb-2" autocomplete="on" maxlength="8" placeholder="ABC1D23" style="text-transform: uppercase;">
+                    <button id="btnConfirmarPlaca" class="btn btn-primary w-auto align-self-start mt-1">Confirmar</button>
+                </div>
+
+                <div id="secaoCadastrarAvulso">
+                    <hr>
+
+                    <h2 class="mb-3">Cadastrar Peças no Estoque da Oficina</h2>
+
+                    <div class="d-flex flex-column gap-2 w-15 mt-1 mb-3">
+                        <a th:href="@{/pecas/avulsas/cadastrar}"
+                           class="btn btn-primary w-auto align-self-start mt-1"
+                           role="button">
+                            Cadastrar
+                        </a>
+                    </div>
+                </div>
+
+                <div id="msgPlaca" class="text-danger mt-2 d-none"></div>
+            </div>
+
+            <div id="secaoVeiculo" class="card p-3 mb-3 d-none">
+                <div>
+                    <div class="fw-semibold text-muted">Veículo</div>
+
+                    <h1 class="m-0">
+                        <span id="txtMontadora">—</span>
+                        <span id="txtModelo">—</span>
+                        <span id="txtPlaca">—</span>
+                    </h1>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="button" id="btnFotos" class="btn btn-primary">
+                            Ver fotos
+                        </button>
+                        <a id="btnOs" class="btn btn-secondary" href="#" rel="noopener">
+                            Abrir OS
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <form id="formPecas" th:action="@{/pecas/salvar-lote}" method="post"
+                  class="card p-3 d-none fw-semibold formulario-custom">
+
+                <input type="hidden" name="placa" id="placaHidden">
+
+                <h3>Cadastro de Peças</h3>
+
+                <div id="pecas-container" class="d-flex flex-column gap-3">
+                    <div class="w-25">
+                        <label class="form-label">Peça</label>
+                        <input name="itens[0].descricao" class="form-control" autocomplete="on" placeholder="Ex.: Farol esquerdo" required>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" id="add-peca" class="btn-circle-plus" aria-label="Adicionar peça"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-success w-p align-self-start mt-3">Salvar</button>
+            </form>
+
+        </div>
+        </div>
+
+    </section>
+
+    <section class="d-block d-xl-none"> <!-- sessão do mobile -->
+        <div class="container-fluid">
+
+            <div class="card shadow-sm bg-light p-3 mb-3">
+
+                <div th:if="${ok}"   class="alert alert-success" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger"  th:text="${erro}"></div>
+                <div th:if="${info}" class="alert alert-info"    th:text="${info}"></div>
+
+                <h2 class="h4 mb-3">Digite a Placa</h2>
+
+                <div class="d-flex flex-column gap-2 mt-1">
+                    <input id="placaInput-m" class="form-control" maxlength="8"
+                           placeholder="ABC1D23" style="text-transform: uppercase;">
+                    <button id="btnConfirmarPlaca-m" class="btn btn-primary w-100 mt-1">Confirmar</button>
+                </div>
+
+                <div id="secaoCadastrarAvulso-m">
+                    <hr>
+
+                    <h2 class="mb-3">Cadastrar Peças no Estoque da Oficina</h2>
+
+                    <div class="d-flex flex-column gap-2 mt-1 mb-3">
+                        <a th:href="@{/pecas/avulsas/cadastrar}"
+                           class="btn btn-primary w-100 align-self-start mt-1"
+                           role="button">
+                            Cadastrar
+                        </a>
+                    </div>
+                </div>
+
+
+                <div id="msgPlaca-m" class="text-danger mt-2 d-none"></div>
+            </div>
+
+            <div id="secaoVeiculo-m" class="card p-3 mb-3 d-none">
+                <div>
+                    <div class="fw-semibold text-muted">Veículo</div>
+
+                    <h1 class="h4 m-0">
+                        <span id="txtMontadora-m">—</span>
+                        <span id="txtModelo-m">—</span>
+                        <span id="txtPlaca-m">—</span>
+                    </h1>
+
+                    <div class="mt-3 d-flex flex-column gap-2">
+                        <button type="button" id="btnFotos-m" class="btn btn-primary w-100">Ver fotos</button>
+                        <a id="btnOs-m" class="btn btn-secondary w-100" href="#" rel="noopener">Abrir OS</a>
+                    </div>
+                </div>
+            </div>
+
+            <form id="formPecas-m" th:action="@{/pecas/salvar-lote}" method="post"
+                  class="card p-3 d-none fw-semibold formulario-custom">
+
+                <input type="hidden" name="placa" id="placaHidden-m">
+
+                <h3 class="h5">Cadastro de Peças</h3>
+
+                <div id="pecas-container-m" class="d-flex flex-column gap-3">
+                    <div class="w-100">
+                        <label class="form-label">Peça</label>
+                        <input name="itens[0].descricao" class="form-control" placeholder="Ex.: Farol esquerdo" required>
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" id="add-peca-m" class="btn-circle-plus" aria-label="Adicionar peça"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-success w-100 mt-3">Salvar</button>
+            </form>
+
+        </div>
+    </section>
+
+</main>
+
+
+<script>
+    function mudarFoto(src) {
+        document.getElementById('foto-principal').src = src;
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // ====== ALERTS: somem sozinhos ======
+        document.querySelectorAll(".alert").forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity .5s ease";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            }, 4000);
+        });
+
+        // ====== Helpers ======
+        const normalizaPlaca = (v) => (v || "").trim().toUpperCase();
+
+        // Descobre se estamos no desktop ("") ou mobile ("-m") a partir da section do elemento
+        const getSuf = (el) => {
+            const sec = el.closest("section");
+            if (!sec) return "";
+            return sec.querySelector("#pecas-container-m") ? "-m" : "";
+        };
+
+        // Constrói o PRIMEIRO bloco de peça com índice 0 (desktop/mobile)
+        const blocoPecaInicial = (suf) => `
+    <div class="${suf ? "w-100" : "w-25"}">
+      <label class="form-label">Peça</label>
+      <input name="itens[0].descricao" class="form-control" placeholder="Ex.: Farol esquerdo" required>
+      <div class="d-flex justify-content-end ${suf ? "mt-3" : "mt-4"} plus-wrap">
+        <button type="button" class="btn-circle-plus" aria-label="Adicionar peça"></button>
+      </div>
+    </div>`;
+
+        // ====== CONFIRMAR PLACA (desktop e mobile) ======
+        ["btnConfirmarPlaca", "btnConfirmarPlaca-m"].forEach(id => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+
+            btn.addEventListener("click", async (e) => {
+                e.preventDefault();
+
+                const suf = getSuf(btn);
+
+                // pega refs da MESMA seção (usando o sufixo)
+                const placaInput   = document.getElementById("placaInput" + suf);
+                const msgPlaca     = document.getElementById("msgPlaca" + suf);
+                const secaoVeiculo = document.getElementById("secaoVeiculo" + suf);
+                const formPecas    = document.getElementById("formPecas" + suf);
+                const txtMontadora = document.getElementById("txtMontadora" + suf);
+                const txtModelo    = document.getElementById("txtModelo" + suf);
+                const txtPlaca     = document.getElementById("txtPlaca" + suf);
+                const placaHidden  = document.getElementById("placaHidden" + suf);
+                const btnFotos     = document.getElementById("btnFotos" + suf);
+                const btnOs        = document.getElementById("btnOs" + suf);
+                const pecasCont    = document.getElementById("pecas-container" + suf);
+
+                const secaoCadastrarAvulso = document.getElementById("secaoCadastrarAvulso" + suf);
+
+                // reset UI + injeta bloco inicial com name correto (itens[0].descricao)
+                if (pecasCont) pecasCont.innerHTML = blocoPecaInicial(suf);
+                secaoVeiculo?.classList.add("d-none");
+                formPecas?.classList.add("d-none");
+                secaoCadastrarAvulso?.classList.remove("d-none");
+                msgPlaca?.classList.add("d-none");
+                if (txtMontadora) txtMontadora.textContent = "—";
+                if (txtModelo)    txtModelo.textContent    = "—";
+                if (txtPlaca)     txtPlaca.textContent     = "—";
+                if (placaHidden)  placaHidden.value        = "";
+
+                const placa = normalizaPlaca(placaInput?.value);
+                if (!placa) {
+                    if (msgPlaca){ msgPlaca.textContent = "Digite a placa."; msgPlaca.classList.remove("d-none"); }
+                    return;
+                }
+
+                // busca dados do veículo
+                try {
+                    const r = await fetch(`/pecas/api/veiculos/${encodeURIComponent(placa)}`);
+                    if (!r.ok) throw new Error("Veículo não encontrado");
+                    const v = await r.json();
+
+                    if (txtMontadora) txtMontadora.textContent = v.montadora ?? "—";
+                    if (txtModelo)    txtModelo.textContent    = [v.modelo ?? "—", v.ano ?? ""].filter(Boolean).join(" ");
+                    if (txtPlaca)     txtPlaca.textContent     = v.placa ?? placa;
+                    if (placaHidden)  placaHidden.value        = placa;
+
+                    secaoVeiculo?.classList.remove("d-none");
+                    formPecas?.classList.remove("d-none");
+                    secaoCadastrarAvulso?.classList.add("d-none");
+                    if (btnFotos) btnFotos.disabled = false;
+                    if (btnOs)    btnOs.classList.remove("disabled");
+
+                    // foca no primeiro campo
+                    pecasCont?.querySelector('input[name="itens[0].descricao"]')?.focus();
+                } catch {
+                    secaoVeiculo?.classList.add("d-none");
+                    formPecas?.classList.add("d-none");
+                    if (msgPlaca) { msgPlaca.textContent = "Placa não encontrada."; msgPlaca.classList.remove("d-none"); }
+                }
+            });
+        });
+
+        // ====== BOTÃO "+" dinâmico (delegação por seção; numera corretamente) ======
+        document.addEventListener("click", (e) => {
+            const target = e.target;
+            if (!target.classList?.contains("btn-circle-plus")) return;
+
+            const suf = getSuf(target);
+            const sec = target.closest("section");
+            const pecasCont = sec?.querySelector("#pecas-container" + suf);
+
+            const secaoCadastrarAvulso = document.getElementById("secaoCadastrarAvulso" + suf);
+            if (!pecasCont) return;
+
+            // remove todos os "+" antigos (só o bloco novo fica com +)
+            pecasCont.querySelectorAll(".btn-circle-plus").forEach(btn => {
+                const wrap = btn.closest(".plus-wrap");
+                if (wrap) wrap.remove();
+            });
+
+            // calcula o próximo índice pelo total atual de inputs "itens[?].descricao"
+            const idx = pecasCont.querySelectorAll('input[name^="itens["][name$="].descricao"]').length;
+
+            const largura = suf ? "w-100" : "w-25";
+            const margem  = suf ? "mt-3"  : "mt-4";
+
+            const block = document.createElement("div");
+            block.className = largura;
+            block.innerHTML = `
+      <label class="form-label">Peça</label>
+      <input name="itens[${idx}].descricao" class="form-control" placeholder="Ex.: Farol esquerdo" required>
+      <div class="d-flex justify-content-end ${margem} plus-wrap">
+        <button type="button" class="btn-circle-plus" aria-label="Adicionar peça"></button>
+      </div>`;
+            pecasCont.appendChild(block);
+            block.querySelector("input")?.focus();
+        });
+
+        // ====== VER FOTOS (inalterado) ======
+        ["btnFotos", "btnFotos-m"].forEach(id => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+
+            btn.addEventListener("click", async () => {
+                const suf = getSuf(btn);
+                const placaHidden = document.getElementById("placaHidden" + suf);
+                const placaInput  = document.getElementById("placaInput"  + suf);
+                const placa = normalizaPlaca(placaHidden?.value || placaInput?.value);
+                if (!placa) return;
+
+                const principal = document.getElementById("foto-principal");
+                const thumbs    = document.getElementById("thumbs-list");
+                const noMsg     = document.getElementById("no-fotos-msg");
+
+                thumbs && (thumbs.innerHTML = "");
+                principal?.classList.add("d-none");
+                noMsg?.classList.add("d-none");
+
+                let lista = [];
+                try {
+                    const fr = await fetch(`/pecas/api/veiculos/${encodeURIComponent(placa)}/fotos`);
+                    if (fr.ok) lista = await fr.json();
+                } catch {}
+
+                if (Array.isArray(lista) && lista.length > 0) {
+                    if (principal) {
+                        principal.src = lista[0];
+                        principal.classList.remove("d-none");
+                    }
+                    if (thumbs) {
+                        lista.forEach((url) => {
+                            const img = document.createElement("img");
+                            img.src = url;
+                            img.className = "img-thumbnail";
+                            img.style.width = "100px";
+                            img.style.height = "70px";
+                            img.style.objectFit = "cover";
+                            img.style.cursor = "pointer";
+                            img.addEventListener("click", () => { if (principal) principal.src = url; });
+                            thumbs.appendChild(img);
+                        });
+                    }
+                } else {
+                    noMsg?.classList.remove("d-none");
+                }
+
+                const modalEl = document.getElementById("fotosModal");
+                if (modalEl && window.bootstrap?.Modal) new bootstrap.Modal(modalEl).show();
+            });
+        });
+
+        // ====== ABRIR OS (inalterado) ======
+        ["btnOs", "btnOs-m"].forEach(id => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+
+            btn.addEventListener("click", async (e) => {
+                e.preventDefault();
+
+                const suf = getSuf(btn);
+                const placaHidden = document.getElementById("placaHidden" + suf);
+                const placaInput  = document.getElementById("placaInput"  + suf);
+                const placa = normalizaPlaca(placaHidden?.value || placaInput?.value);
+                if (!placa) return;
+
+                const ul    = document.getElementById("os-list");
+                const noMsg = document.getElementById("no-os-msg");
+                ul && (ul.innerHTML = "");
+                noMsg?.classList.add("d-none");
+
+                let lista = [];
+                try {
+                    const r = await fetch(`/pecas/api/veiculos/${encodeURIComponent(placa)}/os`);
+                    if (r.ok) lista = await r.json();
+                } catch (err) {
+                    console.error("Erro carregando OS:", err);
+                }
+
+                if (Array.isArray(lista) && lista.length > 0) {
+                    lista.forEach((url, i) => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item d-flex justify-content-between align-items-center";
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.target = "_blank";
+                        a.rel = "noopener";
+                        a.textContent = `Abrir OS ${i + 1}`;
+                        li.appendChild(a);
+                        ul?.appendChild(li);
+                    });
+                } else {
+                    noMsg?.classList.remove("d-none");
+                }
+
+                const osModalEl = document.getElementById("osModal");
+                if (osModalEl && window.bootstrap?.Modal) new bootstrap.Modal(osModalEl).show();
+            });
+        });
+    });
+</script>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const alerts = document.querySelectorAll(".alert");
+
+        alerts.forEach(alert => {
+            setTimeout(() => {
+
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+
+                setTimeout(() => alert.remove(), 500);
+            }, 6000);
+        });
+    });
+</script>
+
+<div class="modal fade" id="osModal" tabindex="-1" aria-labelledby="osModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="osModalLabel">Ordem(s) de Serviço</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="no-os-msg" class="text-muted d-none">Nenhuma OS encontrada para este veículo.</div>
+                <ul id="os-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="fotosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fotos do veículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Foto grande -->
+                <div class="text-center mb-3">
+                    <img id="foto-principal"
+                         class="img-fluid rounded shadow d-none"
+                         style="max-height:70vh; object-fit:contain;"
+                         alt="Foto principal">
+                </div>
+
+                <!-- Mensagem quando não houver fotos -->
+                <div id="no-fotos-msg" class="text-center text-muted mb-3 d-none">
+                    <small>Nenhuma foto encontrada para este veículo.</small>
+                </div>
+
+                <!-- Miniaturas -->
+                <div id="thumbs-list" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

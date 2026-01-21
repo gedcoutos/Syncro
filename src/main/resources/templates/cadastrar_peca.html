@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Peça Estoque da Oficina - Syncro!</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body class="bg-primary">
+
+<nav class="navbar d-md-none navbar-dark px-3">
+    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMobile">☰</button>
+    <span class="navbar-brand">
+        <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+    </span>
+</nav>
+
+<!-- MENU DESKTOP -->
+<aside class="sidebar-fixed d-none d-md-flex flex-column justify-content-between bg-white border-end p-3">
+    <div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </div>
+        <br>
+        <ul class="nav nav-pills flex-column gap-1 mt-4">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+    </div>
+
+
+    <div class="border-top small d-flex align-items-center justify-content-between px-2 pt-2 mt-3">
+        <div class="me-2">
+            <div class="fw-semibold">
+                <span class="me-1">👤</span>
+                <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+</aside>
+
+<!-- MENU MOBILE -->
+<aside class="offcanvas offcanvas-start" tabindex="-1" id="menuMobile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column h-100">
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top small">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="fw-semibold">
+                        <span class="me-1">👤</span>
+                        <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="content-wrap p-3">
+
+    <!-- DESKTOP -->
+    <section class="d-none d-xl-block">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4">
+                <h2 class="mb-2">Cadastrar Peça no Estoque da Oficina</h2>
+                <p class="text-muted small">Preencha os dados da peça</p>
+
+                <!-- mensagens -->
+                <div th:if="${ok}" class="alert alert-success alert-dismissible fade show msg-auto" role="alert" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show msg-auto" role="alert" th:text="${erro}"></div>
+
+                <!-- form -->
+                <form th:action="@{/pecas/avulsas/salvar}" method="post" class="mb-3 row g-3 fw-semibold formulario-custom">
+                    <input type="hidden" name="nome" value="SEMPLACA"/>
+
+                    <hr>
+
+                    <div class="mb-2">
+                        <label class="form-label">Descrição</label>
+                        <input class="form-control w-15" name="descricao" placeholder="ex: Para-choque dianteiro" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Montadora</label>
+                        <input class="form-control w-15" name="montadora" placeholder="ex: GM" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Modelo</label>
+                        <input class="form-control w-15" name="modelo" placeholder="ex: Onix" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Ano</label>
+                        <input class="form-control w-p" type="number" name="ano" placeholder="ex: 2020" min="1900" max="2100" required>
+                    </div>
+
+                    <div class="mb-3">
+
+                        <div>
+                            <label class="form-label d-block mb-2">Box</label>
+                        </div>
+
+                        <div class="btn-group" role="group" aria-label="Subboxes">
+                            <!-- 56 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox56" value="56" autocomplete="off" required>
+                            <label class="btn btn-outline-primary" for="subbox56">56</label>
+                            <!-- 57 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox57" value="57" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox57">57</label>
+                            <!-- 58 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox58" value="58" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox58">58</label>
+                            <!-- 59 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox59" value="59" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox59">59</label>
+                            <!-- 60 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox60" value="60" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox60">60</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="col-12 d-flex gap-2 mt-4">
+                        <button class="btn btn-success w-p align-self-start mt-3" type="submit">Salvar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MOBILE -->
+    <section class="d-flex flex-column justify-content-center align-items-center pt-4 d-block d-xl-none">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4 w-100">
+
+                <h2 class="mb-2">Cadastrar Peça no Estoque da Oficina</h2>
+                <p class="text-muted small">Preencha os dados da peça</p>
+
+                <div th:if="${ok}" class="alert alert-success alert-dismissible fade show msg-auto" role="alert" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show msg-auto" role="alert" th:text="${erro}"></div>
+
+                <form th:action="@{/pecas/avulsas/salvar}" method="post" class="mb-3 row g-3 fw-semibold formulario-custom">
+                    <input type="hidden" name="nome" value="SEMPLACA"/>
+
+                    <hr>
+
+                    <div class="mb-2">
+                        <label class="form-label">Descrição</label>
+                        <input class="form-control" name="descricao" placeholder="ex: Para-choque dianteiro" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Montadora</label>
+                        <input class="form-control" name="montadora" placeholder="ex: GM" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Modelo</label>
+                        <input class="form-control" name="modelo" placeholder="ex: Onix" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Ano</label>
+                        <input class="form-control" type="number" name="ano" placeholder="ex: 2020" min="1900" max="2100" required>
+                    </div>
+
+                        <div class="mb-2">
+                            <label class="form-label d-block mb-2">Box</label>
+                        </div>
+
+                    <div class="mb-3">
+                        <div class="btn-group" role="group" aria-label="Subboxes">
+                            <!-- 56 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox56" value="56" autocomplete="off" required>
+                            <label class="btn btn-outline-primary" for="subbox56">56</label>
+                            <!-- 57 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox57" value="57" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox57">57</label>
+                            <!-- 58 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox58" value="58" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox58">58</label>
+                            <!-- 59 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox59" value="59" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox59">59</label>
+                            <!-- 60 -->
+                            <input type="radio" class="btn-check" name="subbox" id="subbox60" value="60" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="subbox60">60</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="col-12 d-flex gap-2 mt-4">
+                        <button class="btn btn-primary w-50" type="submit">Salvar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            document.querySelectorAll('.msg-auto').forEach(msg => {
+                msg.classList.add('fade');
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 4000);
+    });
+</script>
+
+</body>
+</html>

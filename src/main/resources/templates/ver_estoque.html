@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Boxes - Syncro!</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body class="bg-primary">
+
+<nav class="navbar d-md-none navbar-dark px-3">
+    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMobile">☰</button>
+    <span class="navbar-brand">
+    <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+  </span>
+</nav>
+
+<!-- MENU DESKTOP -->
+<aside class="sidebar-fixed d-none d-md-flex flex-column justify-content-between bg-white border-end p-3">
+    <div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </div>
+        <br>
+        <ul class="nav nav-pills flex-column gap-1 mt-4">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+    </div>
+
+
+    <div class="border-top small d-flex align-items-center justify-content-between px-2 pt-2 mt-3">
+        <div class="me-2">
+            <div class="fw-semibold">
+                <span class="me-1">👤</span>
+                <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+</aside>
+
+<!-- MENU MOBILE -->
+<aside class="offcanvas offcanvas-start" tabindex="-1" id="menuMobile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column h-100">
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top small">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="fw-semibold">
+                        <span class="me-1">👤</span>
+                        <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="content-wrap pt-3">
+    <!-- DESKTOP -->
+    <section class="d-none d-xl-block">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4">
+
+                <div th:if="${ok}" class="alert alert-success" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+                <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
+
+                <h2 class="mb-3">Situação dos Boxes</h2>
+
+                <hr>
+                <br>
+
+                <!-- wrapper mantém o grid do seu CSS -->
+                <div class="box-chooser">
+                    <div class="grid mb-3">
+                        <div th:each="b : ${todos}" th:with="ocup=${ocupados.get(b)}">
+
+                            <!-- Ocupado -->
+                            <div th:if="${ocup != null}" class="box-card ocupado">
+                                <button type="button" class="box-btn" disabled th:text="${ocup}">ABC1D23 - Modelo</button>
+                                <div class="tarja ocupado">OCUPADO</div>
+                            </div>
+
+                            <!-- Livre -->
+                            <div th:if="${ocup == null}" class="box-card livre">
+                                <button type="button" class="box-btn" disabled>
+                                    Box <span th:text="${b}">1</span>
+                                </button>
+                                <div class="tarja livre">LIVRE</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MOBILE -->
+    <section class="d-flex flex-column justify-content-center align-items-center pt-4 d-block d-xl-none">
+        <div class="container-fluid p-2">
+            <div class="card shadow-lg bg-light p-4 w-100">
+
+                <div th:if="${ok}" class="alert alert-success" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+                <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
+
+                <h5 class="mb-3">Situação dos Boxes</h5>
+
+                <div class="box-chooser">
+                    <div class="grid mb-3">
+                        <div th:each="b : ${todos}" th:with="ocup=${ocupados.get(b)}">
+
+                            <div th:if="${ocup != null}" class="box-card ocupado">
+                                <button type="button" class="box-btn" disabled th:text="${ocup}">ABC1D23 - Modelo</button>
+                                <div class="tarja ocupado">OCUPADO</div>
+                            </div>
+
+                            <div th:if="${ocup == null}" class="box-card livre">
+                                <button type="button" class="box-btn" disabled>
+                                    Box <span th:text="${b}">1</span>
+                                </button>
+                                <div class="tarja livre">LIVRE</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</main>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

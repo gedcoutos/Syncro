@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--esse comando é responsavel para que o CSS responsivo funcione-->
+    <title>Login - Syncro!</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"> <!--Aqui é a referncia interna do framework Bootstrap-->
+</head>
+
+<body class="bg-primary d-flex justify-content-center align-items-center" style="height: 100vh;">
+
+    <div class="card shadow-lg p-5" style="width: 350px">
+        <img src="/images/logo.png" class="mx-auto d-block mb-5" alt="Logo Syncro" style="width: 250px;">
+
+        <div th:if="${msgErro}" class="alert alert-danger" th:text="${msgErro}"></div>
+
+        <form method="post" th:action="@{/login}">
+            <div class="mb-3">
+                <label for="usuario" class="form-label">Usuário</label>
+                <input type="text" id="usuario" name="username" class="form-control" placeholder="Digite seu Usuário" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua Senha" required>
+            </div>
+
+            <br>
+
+            <button type="submit" class="btn btn-primary w-75 mx-auto d-block">Entrar</button>
+        </form>
+
+    </div>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script> <!-- Parte de JS do Bootstrap -->
+
+    <footer class="fixed-bottom text-center small text-white" style="margin-bottom: 20px; color: #ced4da; font-size: 0.99rem;">
+        <span style="opacity: 0.7;">Syncro! v2</span>
+        <span style="opacity: 0.4;"> | </span>
+        <span style="opacity: 0.7;">© 2025 Gedielson Couto</span>
+    </footer>
+
+
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Veículo - Syncro</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .kv-wrap { max-width: 720px }
+        .kv-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: .25rem 1rem;
+            font-weight: 600;
+        }
+        .kv-grid > div:nth-child(odd)  { color:#555; white-space:nowrap; }
+        .kv-grid > div:nth-child(even) { font-weight: 500; }
+    </style>
+</head>
+<body class="bg-primary">
+
+<nav class="navbar d-md-none navbar-dark px-3">
+    <button class="btn btn-outline-light d-md-none" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#menuMobile">☰</button>
+    <span class="navbar-brand">
+      <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+    </span>
+</nav>
+
+<!-- MENU DESKTOP -->
+<aside class="sidebar-fixed d-none d-md-flex flex-column justify-content-between bg-white border-end p-3">
+    <div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </div>
+        <br>
+        <ul class="nav nav-pills flex-column gap-1 mt-4">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+    </div>
+
+
+    <div class="border-top small d-flex align-items-center justify-content-between px-2 pt-2 mt-3">
+        <div class="me-2">
+            <div class="fw-semibold">
+                <span class="me-1">👤</span>
+                <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+</aside>
+
+<!-- MENU MOBILE -->
+<aside class="offcanvas offcanvas-start" tabindex="-1" id="menuMobile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column h-100">
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top small">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="fw-semibold">
+                        <span class="me-1">👤</span>
+                        <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="content-wrap p-3">
+
+    <!-- DESKTOP -->
+
+    <section class="d-none d-xl-block">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4">
+
+                <div th:if="${info}" class="alert alert-info alert-autoclose" th:text="${info}"></div>
+                <div th:if="${erro}" class="alert alert-danger alert-autoclose" th:text="${erro}"></div>
+                <div th:if="${ok}"   class="alert alert-success alert-autoclose" th:text="${ok}"></div>
+
+                <h2 class="mb-4">Detalhes do Veículo</h2>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a th:href="@{'/veiculos/' + ${v.placa} + '/editar'}"
+                       class="btn btn-outline-primary">
+                        Editar veículo
+                    </a>
+
+                    <form th:action="@{'/veiculos/' + ${v.placa} + '/entregar'}"
+                          method="post"
+                          onsubmit="return confirm('Confirmar baixa deste veículo?')">
+                        <button type="submit" class="btn btn-outline-danger">
+                            Dar baixa
+                        </button>
+                    </form>
+                </div>
+
+                <div th:if="${v != null}">
+                    <div class="kv-wrap">
+                        <div class="kv-grid">
+                            <div>Montadora:</div>      <div th:text="${v.montadora}"></div>
+                            <div>Modelo:</div>         <div th:text="${v.modelo}"></div>
+                            <div>Ano:</div>            <div th:text="${v.ano}"></div>
+                            <div>Placa:</div>          <div th:text="${v.placa}"></div>
+                            <div>Data de Entrada:</div><div th:text="${#temporals.format(v.dataEntrada, 'dd/MM/yyyy HH:mm')}"></div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h2 class="mb-3">Peças cadastradas</h2>
+
+                    <!-- Mensagem quando não há peças -->
+                    <div th:if="${pecasData == null or #lists.isEmpty(pecasData)}"
+                         class="alert alert-info">
+                        Nenhuma peça cadastrada para este veículo.
+                    </div>
+
+                    <!-- Lista quando há peças -->
+                    <div th:if="${pecasData != null and !#lists.isEmpty(pecasData)}"
+                         th:each="p : ${pecasData}"
+                         class="kv-wrap mb-3 p-3 border rounded bg-white shadow-sm">
+                        <div class="kv-grid-peca">
+                            <div>Peça:</div>
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                                <span class="fw-semibold" th:text="${p.nomePeca}">-</span>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-primary ms-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-editar-peca"
+                                        th:attr="data-id=${p.idPeca}, data-desc=${p.nomePeca}">
+                                    Editar
+                                </button>
+                            </div>
+                            <div>Recebimento:</div>
+                            <div th:text="${p.dataChegada != null ? #temporals.format(p.dataChegada, 'dd/MM/yyyy HH:mm') : '—'}">—</div>
+                        </div>
+                    </div>
+
+
+                    <hr>
+
+                    <h2 class="mb-2">Box Atual</h2>
+
+                    <div class="card shadow-sm p-3 mt-3 d-inline-block">
+
+                        <div th:if="${#lists.isEmpty(boxes) == false}" class="d-flex flex-wrap gap-2 p-2">
+                              <span class="badge text-bg-dark px-3 py-2"
+                                    th:each="b : ${boxes}"
+                                    th:text="${b.codigoBox}">1</span>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(boxes)}">
+                              <em class="text-muted">Sem box vinculado no momento.</em>
+                        </div>
+
+                    </div>
+
+                    <br>
+
+                    <div class="mt-4 d-flex gap-2 align-items-center">
+                        <button type="button" id="btnFotos" class="btn btn-primary">Ver fotos</button>
+                        <button type="button" id="btnOs" class="btn btn-secondary">Ver OS</button>
+                    </div>
+                </div>
+
+                <div th:if="${v == null}" class="alert alert-warning text-center">
+                    Nenhum veículo encontrado.
+                </div>
+
+                <div class="mt-4">
+                    <a th:href="@{/consulta-placa}" class="btn btn-secondary">Voltar</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MOBILE -->
+
+    <section class="d-flex flex-column justify-content-center align-items-center pt-4 d-block d-xl-none">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4 w-100">
+
+                <div th:if="${info}" class="alert alert-info alert-autoclose" th:text="${info}"></div>
+                <div th:if="${erro}" class="alert alert-danger alert-autoclose" th:text="${erro}"></div>
+                <div th:if="${ok}"   class="alert alert-success alert-autoclose" th:text="${ok}"></div>
+
+                <h2 class="mb-4">Detalhes do Veículo</h2>
+
+                <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center justify-content-xl-end">
+                    <a th:href="@{'/veiculos/' + ${v.placa} + '/editar'}" class="btn btn-outline-primary w-auto">
+                        Editar veículo
+                    </a>
+
+                    <form th:action="@{'/veiculos/' + ${v.placa} + '/entregar'}"
+                          method="post"
+                          onsubmit="return confirm('Confirmar baixa deste veículo?')"
+                          class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger w-auto">
+                            Dar baixa
+                        </button>
+                    </form>
+
+                </div>
+
+                <div th:if="${v != null}">
+                    <div class="kv-wrap">
+                        <div class="kv-grid">
+                            <div>Montadora:</div>      <div th:text="${v.montadora}"></div>
+                            <div>Modelo:</div>         <div th:text="${v.modelo}"></div>
+                            <div>Ano:</div>            <div th:text="${v.ano}"></div>
+                            <div>Placa:</div>          <div th:text="${v.placa}"></div>
+                            <div>Data de Entrada:</div><div th:text="${#temporals.format(v.dataEntrada, 'dd/MM/yyyy HH:mm')}"></div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h2 class="mb-3">Peças cadastradas</h2>
+
+                    <div th:if="${#lists.isEmpty(pecasData)}" class="alert alert-info">
+                        Nenhuma peça cadastrada para este veículo.
+                    </div>
+
+                    <div th:each="p : ${pecasData}" class="kv-wrap mb-3 p-3 border rounded bg-white shadow-sm">
+                        <div class="kv-grid-peca">
+                            <!-- Linha 1: Peça + botão -->
+                            <div>Peça:</div>
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                                <span class="fw-semibold" th:text="${p.nomePeca}">-</span>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-primary ms-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-editar-peca"
+                                        th:attr="data-id=${p.idPeca}, data-desc=${p.nomePeca}">
+                                    Editar
+                                </button>
+                            </div>
+
+                            <!-- Linha 2: Recebimento -->
+                            <div>Recebimento:</div>
+                            <div th:text="${p.dataChegada != null ? #temporals.format(p.dataChegada, 'dd/MM/yyyy HH:mm') : '—'}">—</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h2 class="mb-2">Box Atual</h2>
+
+                    <div class="card shadow-sm p-3 mt-3 d-inline-block">
+
+                        <div th:if="${#lists.isEmpty(boxes) == false}" class="d-flex flex-wrap gap-2 p-2">
+                              <span class="badge text-bg-dark px-3 py-2"
+                                    th:each="b : ${boxes}"
+                                    th:text="${b.codigoBox}">1</span>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(boxes)}">
+                            <em class="text-muted">Sem box vinculado no momento.</em>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <button type="button" id="btnFotos-m" class="btn btn-primary">Ver fotos</button>
+                        <button type="button" id="btnOs-m" class="btn btn-secondary">Ver OS</button>
+                    </div>
+                </div>
+
+                <div th:if="${v == null}" class="alert alert-warning text-center">
+                    Nenhum veículo encontrado.
+                </div>
+
+                <div class="mt-4">
+                    <a th:href="@{/consulta-placa}" class="btn btn-secondary">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal único, reutilizado -->
+<div class="modal fade" id="modal-editar-peca" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Editar peça</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <form id="form-editar-peca" method="post">
+                <div class="modal-body">
+                    <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <input id="input-desc-peca" name="descricao" type="text" class="form-control" maxlength="120" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL OS -->
+<div class="modal fade" id="osModal" tabindex="-1" aria-labelledby="osModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="osModalLabel">Ordem(s) de Serviço</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="no-os-msg" class="text-muted d-none">Nenhuma OS encontrada para este veículo.</div>
+                <ul id="os-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FOTOS -->
+<div class="modal fade" id="fotosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fotos do veículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="fotoPrincipal"
+                         class="img-fluid rounded shadow d-none"
+                         style="max-height:70vh; object-fit:contain;"
+                         alt="Foto principal">
+                </div>
+
+                <div id="no-fotos-msg" class="text-center text-muted mb-3 d-none">
+                    <small>Nenhuma foto encontrada para este veículo.</small>
+                </div>
+
+                <div id="thumbs-list" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2) Seu JS (usa bootstrap já carregado) -->
+<script th:inline="javascript">
+    const PLACA = /*[[${v != null} ? ${v.placa} : '']]*/ '';
+    const abs = (u) => !u ? '' : (u.startsWith('http') || u.startsWith('/')) ? u : ('/' + u);
+
+    // Evita backdrops órfãos e body travado
+    document.addEventListener('hidden.bs.modal', function () {
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right');
+        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    });
+    document.addEventListener('show.bs.modal', function () {
+        // segurança extra caso algum backdrop tenha sobrado
+        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    });
+
+    const openModal = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        // garante uma única instância
+        const modal = bootstrap.Modal.getOrCreateInstance(el);
+        modal.show();
+    };
+
+    const wireFotos = (btnId) => {
+        document.getElementById(btnId)?.addEventListener('click', async () => {
+            const principal = document.getElementById('fotoPrincipal');
+            const thumbs    = document.getElementById('thumbs-list');
+            const noMsg     = document.getElementById('no-fotos-msg');
+
+            thumbs.innerHTML = '';
+            principal.classList.add('d-none');
+            noMsg.classList.add('d-none');
+
+            let lista = [];
+            try {
+                const r = await fetch(`/pecas/api/veiculos/${encodeURIComponent(PLACA)}/fotos`);
+                if (r.ok) lista = await r.json();
+            } catch {}
+
+            if (Array.isArray(lista) && lista.length) {
+                principal.src = abs(lista[0]);
+                principal.classList.remove('d-none');
+
+                lista.forEach((url) => {
+                    const img = document.createElement('img');
+                    img.src = abs(url);
+                    img.className = 'img-thumbnail';
+                    img.style.width = '100px';
+                    img.style.height = '70px';
+                    img.style.objectFit = 'cover';
+                    img.style.cursor = 'pointer';
+                    img.onclick = () => { principal.src = abs(url); };
+                    thumbs.appendChild(img);
+                });
+            } else {
+                noMsg.classList.remove('d-none');
+            }
+
+            openModal('fotosModal');
+        });
+    };
+
+    const wireOs = (btnId) => {
+        document.getElementById(btnId)?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const ul    = document.getElementById('os-list');
+            const noMsg = document.getElementById('no-os-msg');
+
+            ul.innerHTML = '';
+            noMsg.classList.add('d-none');
+
+            let lista = [];
+            try {
+                const r = await fetch(`/pecas/api/veiculos/${encodeURIComponent(PLACA)}/os`);
+                if (r.ok) lista = await r.json();
+            } catch {}
+
+            if (Array.isArray(lista) && lista.length) {
+                lista.forEach((url, i) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    const a = document.createElement('a');
+                    a.href = abs(url);
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.textContent = `Abrir OS ${i + 1}`;
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                });
+            } else {
+                noMsg.classList.remove('d-none');
+            }
+
+            openModal('osModal');
+        });
+    };
+
+    wireFotos('btnFotos');
+    wireFotos('btnFotos-m');
+    wireOs('btnOs');
+    wireOs('btnOs-m');
+</script>
+
+<script>
+    document.addEventListener('show.bs.modal', function (ev) {
+        const btn = ev.relatedTarget;         // botão que abriu o modal
+        if (!btn) return;
+        const id   = btn.getAttribute('data-id');
+        const desc = btn.getAttribute('data-desc');
+
+        const form = document.getElementById('form-editar-peca');
+        form.action = '/pecas/' + id + '/editar';
+
+        document.getElementById('input-desc-peca').value = "";
+    });
+</script>
+
+
+<script>
+    const autoclose = document.querySelectorAll('.alert.alert-autoclose');
+    if (autoclose.length > 0) {
+        setTimeout(() => autoclose.forEach(el => el.remove()), 4000);
+    }
+</script>
+
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

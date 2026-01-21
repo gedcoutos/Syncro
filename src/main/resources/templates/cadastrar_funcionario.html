@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Funcionário - Syncro!</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body class="bg-primary">
+
+<nav class="navbar d-md-none navbar-dark px-3">
+    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMobile">☰</button>
+    <span class="navbar-brand">
+        <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+    </span>
+</nav>
+
+<!-- MENU DESKTOP -->
+<aside class="sidebar-fixed d-none d-md-flex flex-column justify-content-between bg-white border-end p-3">
+    <div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </div>
+<br>
+        <ul class="nav nav-pills flex-column gap-1 mt-4">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+    </div>
+
+
+    <div class="border-top small d-flex align-items-center justify-content-between px-2 pt-2 mt-3">
+        <div class="me-2">
+            <div class="fw-semibold">
+                <span class="me-1">👤</span>
+                <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+</aside>
+
+<!-- MENU MOBILE -->
+<aside class="offcanvas offcanvas-start" tabindex="-1" id="menuMobile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column h-100">
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top small">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="fw-semibold">
+                        <span class="me-1">👤</span>
+                        <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="content-wrap p-3">
+
+    <!-- DESKTOP -->
+    <section class="d-none d-xl-block">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4">
+                <h2 class="mb-2 d-flex align-items-center justify-content-between">
+                    Cadastrar Funcionário
+                    <button class="btn btn-outline-primary"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalFuncionarios">
+                        Ver cadastrados
+                    </button>
+                </h2>
+                <p class="text-muted small">Preencha os dados do Funcionário</p>
+
+
+                <!-- mensagens -->
+                <div th:if="${ok}" class="alert alert-success alert-dismissible fade show msg-auto" role="alert" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show msg-auto" role="alert" th:text="${erro}"></div>
+
+                <form th:action="@{/funcionarios}" th:object="${funcionario}"
+                      method="post" class="mb-3 row g-3 fw-semibold formulario-custom"
+                      autocomplete="off">
+
+                    <!-- iscas anti-autofill -->
+                    <input type="text" name="fakeUser" autocomplete="username" tabindex="-1"
+                           style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+                    <input type="password" name="fakePass" autocomplete="current-password" tabindex="-1"
+                           style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+
+                    <hr>
+
+                    <div class="mb-2">
+                        <label class="form-label">Nome</label>
+                        <input th:field="*{nome}" type="text" class="form-control w-15"
+                               placeholder="Nome completo" required minlength="3"
+                               autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Usuário</label>
+                        <input th:field="*{username}" type="text" class="form-control w-15"
+                               placeholder="Login do sistema" required minlength="3"
+                               autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Senha</label>
+                        <input th:field="*{senha}" type="password" class="form-control w-15"
+                               placeholder="Mínimo 4 caracteres" required minlength="4"
+                               autocomplete="new-password">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label d-block">Cargo</label>
+                        <div class="btn-group w-15" role="group" aria-label="Selecione o cargo">
+                            <!-- IDs únicos para DESKTOP -->
+                            <input type="radio" class="btn-check" th:field="*{cargo}" id="optAdminDesk" value="ADMIN">
+                            <label class="btn btn-outline-primary" for="optAdminDesk">Administrador</label>
+
+                            <input type="radio" class="btn-check" th:field="*{cargo}" id="optOperadorDesk" value="OPERADOR" checked>
+                            <label class="btn btn-outline-secondary" for="optOperadorDesk">Funcionário</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="col-12 d-flex gap-2 mb-2">
+                        <button type="submit" class="btn btn-success w-p">Salvar</button>
+                        <a th:href="@{/home}" class="btn btn-secondary w-p">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MOBILE -->
+    <section class="d-flex flex-column justify-content-center align-items-center pt-4 d-block d-xl-none">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4 w-100">
+
+                <h2 class="mb-2 d-flex align-items-center justify-content-between">
+                    Cadastrar Funcionário
+                    <button class="btn btn-outline-primary btn-sm"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalFuncionarios">
+                        Ver Funcionários
+                    </button>
+                </h2>
+
+                <div th:if="${ok}" class="alert alert-success alert-dismissible fade show msg-auto" role="alert" th:text="${ok}"></div>
+                <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show msg-auto" role="alert" th:text="${erro}"></div>
+
+                <form th:action="@{/funcionarios}" th:object="${funcionario}"
+                      method="post" class="row g-3 mt-2" autocomplete="off">
+
+                    <!-- iscas anti-autofill -->
+                    <input type="text" name="fakeUserMob" autocomplete="username" tabindex="-1"
+                           style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+                    <input type="password" name="fakePassMob" autocomplete="current-password" tabindex="-1"
+                           style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+
+                    <div class="mb-2">
+                        <label class="form-label">Nome</label>
+                        <input th:field="*{nome}" type="text" class="form-control"
+                               placeholder="Nome completo" required minlength="3"
+                               autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Usuário</label>
+                        <input th:field="*{username}" type="text" class="form-control"
+                               placeholder="Login do sistema" required minlength="3"
+                               autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Senha</label>
+                        <input th:field="*{senha}" type="password" class="form-control"
+                               placeholder="Mínimo 4 caracteres" required minlength="4"
+                               autocomplete="new-password">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label d-block">Cargo</label>
+                        <div class="btn-group w-100" role="group" aria-label="Selecione o cargo">
+
+                            <input type="radio" class="btn-check" th:field="*{cargo}" id="optAdminMob" value="ADMIN">
+                            <label class="btn btn-outline-primary" for="optAdminMob">Administrador</label>
+
+                            <input type="radio" class="btn-check" th:field="*{cargo}" id="optOperadorMob" value="OPERADOR" checked>
+                            <label class="btn btn-outline-secondary" for="optOperadorMob">Funcionário</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="col-12 d-flex gap-2 mt-2">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <a th:href="@{/home}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal: Funcionários cadastrados -->
+    <div class="modal fade" id="modalFuncionarios" tabindex="-1" aria-labelledby="modalFuncionariosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modalFuncionariosLabel" class="modal-title">Funcionários cadastrados</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div th:if="${#lists.isEmpty(funcionarios)}" class="text-muted">
+                        Nenhum funcionário cadastrado.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(funcionarios)}">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Usuário</th>
+                                <th>Cargo</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="f : ${funcionarios}">
+                                <td th:text="${f.nome}">Nome</td>
+                                <td th:text="${f.username}">username</td>
+                                <td>
+                                         <span class="badge"
+                                              th:classappend="${#strings.equalsIgnoreCase(f.cargo, 'ADMIN')} ? ' bg-primary' : ' bg-secondary'"
+                                              th:text="${f.cargo}">OPERADOR</span>
+                                </td>
+                                <td class="text-end">
+                                    <!-- Excluir (bloqueia se for o próprio usuário logado) -->
+                                    <form th:if="${session.usuarioLogado != f.username}"
+                                          th:action="@{'/funcionarios/' + ${f.idFuncionario} + '/excluir'}"
+                                          method="post"
+                                          class="d-inline"
+                                          th:attr="data-nome=${f.nome}"
+                                          onsubmit="return confirm('Excluir o funcionário: ' + this.dataset.nome + ' ?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+
+                                    <!-- Botão desabilitado quando for o próprio usuário -->
+                                    <button th:if="${session.usuarioLogado == f.username}"
+                                            class="btn btn-sm btn-outline-secondary" disabled
+                                            title="Você está logado com este usuário">
+                                        Excluir
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            document.querySelectorAll('.msg-auto').forEach(msg => {
+                msg.classList.add('fade');
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 4000);
+    });
+</script>
+
+</body>
+</html>

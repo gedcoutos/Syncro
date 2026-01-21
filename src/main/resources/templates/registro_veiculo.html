@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modo} == 'editar' ? 'Editar Veículo - Syncro' : 'Cadastrar Veículo - Syncro'">Syncro</title>
+    <link rel="shortcut icon" href="/images/logo_topo.png" type="image/x-icon">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body class="bg-primary">
+
+<nav class="navbar d-md-none navbar-dark px-3">
+    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMobile">☰</button>
+    <span class="navbar-brand">
+    <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+  </span>
+</nav>
+
+<!-- MENU DESKTOP -->
+<aside class="sidebar-fixed d-none d-md-flex flex-column justify-content-between bg-white border-end p-3">
+    <div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <img src="/images/logo.png" alt="Logo Syncro!" style="height: 40px;">
+        </div>
+        <br>
+        <ul class="nav nav-pills flex-column gap-1 mt-4">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+    </div>
+
+
+    <div class="border-top small d-flex align-items-center justify-content-between px-2 pt-2 mt-3">
+        <div class="me-2">
+            <div class="fw-semibold">
+                <span class="me-1">👤</span>
+                <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+</aside>
+
+<!-- MENU MOBILE -->
+<aside class="offcanvas offcanvas-start" tabindex="-1" id="menuMobile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column h-100">
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/veiculos/registro}">Cadastrar Veículo</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/cadastrar}">Cadastrar Peças</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/consulta-placa}">Consulta por Placa</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pecas/estoque/consulta}">Consultar Estoque</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/estoque/visualizar}">Visualizar Boxes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios/novo}">Cadastrar Funcionário</a></li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top small">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="fw-semibold">
+                        <span class="me-1">👤</span>
+                        <span th:text="${session.nomeExibicao} ?: ${session.usuarioLogado}">Usuário</span>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="content-wrap pt-3">
+
+    <!-- DESKTOP -->
+    <section class="d-none d-xl-block">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4">
+
+                <div th:if="${msgSucesso}"
+                     id="alert-sucesso-desktop"
+                     class="alert alert-success alert-dismissible fade show mt-3"
+                     role="alert">
+                    <span th:text="${msgSucesso}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <form
+                        th:object="${veiculo}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        class="fw-semibold formulario-custom"
+                        th:action="${modo} == 'editar'
+                        ? @{'/veiculos/' + ${veiculo.placa} + '/editar'}
+                        : @{/veiculos}">
+
+                    <h2 class="mb-2" th:text="${modo} == 'editar' ? 'Editar Veículo' : 'Cadastrar Veículo'">Cadastrar Veículo</h2>
+                    <p class="text-muted small" th:text="${modo} == 'editar' ? 'Atualize os dados do veículo' : 'Preencha os dados do veículo'">
+                        Preencha os dados do veículo
+                    </p>
+
+                    <div class="row g-3 p-3">
+
+                        <div class="mb-2">
+                            <label class="form-label">Placa</label>
+                            <input class="form-control w-15 placa-input"
+                                   th:field="*{placa}"
+                                   maxlength="8"
+                                   placeholder="Digite a placa do veículo."
+                                   th:readonly="${modo} == 'editar'"
+                                   required>
+                            <div class="text-danger mt-1" th:if="${#fields.hasErrors('placa')}" th:errors="*{placa}"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Montadora</label>
+                            <input class="form-control w-15" th:field="*{montadora}" placeholder="Digite a montadora do veículo." required>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Modelo</label>
+                            <input class="form-control w-15" th:field="*{modelo}" placeholder="Digite o modelo do veículo." required>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Ano</label>
+                            <input class="form-control w-p" th:field="*{ano}" type="number" min="1900" max="2100" placeholder="Digite o ano." required>
+                        </div>
+
+                        <hr>
+                        <div>
+                            <h3 class="fw-bold">Anexos</h3>
+                            <p class="text-muted small"
+                               th:text="${modo} == 'editar'
+                            ? 'Se não selecionar novos arquivos, as fotos e OS atuais serão mantidas.'
+                            : 'Anexe fotos e arquivos.'">
+                                Anexe fotos e arquivos.
+                            </p>
+                        </div>
+
+                        <div class="row g-2">
+
+                            <div class="col-md-4">
+                                <label class="form-label d-block">Fotos do Veículo</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label for="arquivosDesktop" class="btn btn-primary mb-0">Escolher fotos</label>
+                                    <span id="arquivosDesktop-info" class="text-muted small flex-grow-1 text-truncate">
+                    Nenhum arquivo selecionado
+                  </span>
+                                </div>
+                                <input id="arquivosDesktop" name="arquivos" type="file" multiple accept="image/*" hidden>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label d-block">Ordem de Serviço (PDF)</label>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <label for="arquivoOsDesktop" class="btn btn-secondary mb-0">Escolher OS</label>
+                                    <span id="arquivoOsDesktop-info" class="text-muted small flex-grow-1 text-truncate">
+                    Nenhum arquivo selecionado
+                  </span>
+                                </div>
+                                <input id="arquivoOsDesktop" name="arquivoOs" type="file" multiple accept=".pdf,application/pdf" hidden>
+                            </div>
+
+                        </div>
+
+                        <hr class="mt-4">
+
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-success w-p align-self-start mt-3"
+                                    th:text="${modo} == 'editar' ? 'Salvar alterações' : 'Salvar'">Salvar</button>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MOBILE -->
+    <section class="d-flex flex-column justify-content-center align-items-center pt-4 d-block d-xl-none">
+        <div class="container-fluid">
+            <div class="card shadow-lg bg-light p-4 w-100">
+
+                <div th:if="${msgSucesso}"
+                     id="alert-sucesso-mobile"
+                     class="alert alert-success alert-dismissible fade show mt-3"
+                     role="alert">
+                    <span th:text="${msgSucesso}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <form
+                        th:object="${veiculo}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        class="fw-semibold formulario-custom"
+                        th:action="${modo} == 'editar'
+                        ? @{'/veiculos/' + ${veiculo.placa} + '/editar'}
+                        : @{/veiculos}">
+
+                    <h2 class="mb-2" th:text="${modo} == 'editar' ? 'Editar Veículo' : 'Cadastrar Veículo'">Cadastrar Veículo</h2>
+                    <p class="text-muted small" th:text="${modo} == 'editar' ? 'Atualize os dados do veículo' : 'Preencha os dados do veículo'">
+                        Preencha os dados do veículo
+                    </p>
+
+                    <div class="row g-3 p-3">
+
+                        <div class="mb-2">
+                            <label class="form-label">Placa</label>
+                            <input class="form-control placa-input"
+                                   th:field="*{placa}"
+                                   maxlength="8"
+                                   placeholder="Digite a placa do veículo."
+                                   th:readonly="${modo} == 'editar'"
+                                   required>
+                            <div class="text-danger mt-1" th:if="${#fields.hasErrors('placa')}" th:errors="*{placa}"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Montadora</label>
+                            <input class="form-control" th:field="*{montadora}" placeholder="Digite a montadora do veículo." required>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Modelo</label>
+                            <input class="form-control" th:field="*{modelo}" placeholder="Digite o modelo do veículo." required>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Ano</label>
+                            <input class="form-control" th:field="*{ano}" type="number" min="1900" max="2100" placeholder="Digite o ano." required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Anexar Fotos</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="arquivosMobile" class="btn btn-primary mb-0">Escolher fotos</label>
+                                <span id="arquivosMobile-info" class="text-muted small flex-grow-1 text-truncate">
+                  Nenhum arquivo selecionado
+                </span>
+                            </div>
+                            <input id="arquivosMobile" name="arquivos" type="file" multiple accept="image/*" hidden>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Anexar OS</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="arquivoOsMobile" class="btn btn-secondary mb-0">Escolher OS</label>
+                                <span id="arquivoOsMobile-info" class="text-muted small flex-grow-1 text-truncate">
+                  Nenhum arquivo selecionado
+                </span>
+                            </div>
+                            <input id="arquivoOsMobile" name="arquivoOs" type="file" multiple accept=".pdf,application/pdf" hidden>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-success w-50"
+                                    th:text="${modo} == 'editar' ? 'Salvar alterações' : 'Salvar'">Salvar</button>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // Placa sempre maiúscula
+    document.querySelectorAll('.placa-input').forEach(function(el){
+        el.addEventListener('input', function(ev){ ev.target.value = ev.target.value.toUpperCase(); });
+    });
+</script>
+
+<script>
+    function bindFileInput(inputId, infoId, vazioMsg) {
+        const input = document.getElementById(inputId);
+        const info  = document.getElementById(infoId);
+        if (!input || !info) return;
+
+        input.addEventListener('change', () => {
+            if (!input.files || input.files.length === 0) {
+                info.textContent = vazioMsg;
+                return;
+            }
+            info.textContent = input.files.length === 1
+                ? input.files[0].name
+                : `${input.files.length} arquivos selecionados`;
+        });
+    }
+
+    // Desktop
+    bindFileInput('arquivosDesktop', 'arquivosDesktop-info', 'Nenhuma foto selecionada');
+    bindFileInput('arquivoOsDesktop', 'arquivoOsDesktop-info', 'Nenhum arquivo selecionado');
+
+    // Mobile
+    bindFileInput('arquivosMobile',  'arquivosMobile-info',  'Nenhuma foto selecionada');
+    bindFileInput('arquivoOsMobile', 'arquivoOsMobile-info', 'Nenhum arquivo selecionado');
+</script>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    // fecha automaticamente os alerts de sucesso após 4s
+    (function () {
+        function autoHide(id, delayMs = 4000) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            setTimeout(() => {
+                // tenta usar a API do Bootstrap 5
+                if (window.bootstrap && bootstrap.Alert) {
+                    bootstrap.Alert.getOrCreateInstance(el).close();
+                } else {
+                    // fallback: remove com fade
+                    el.classList.remove('show');
+                    el.addEventListener('transitionend', () => el.remove(), { once: true });
+                    setTimeout(() => el.remove(), 500); // garante remoção
+                }
+            }, delayMs);
+        }
+
+        autoHide('alert-sucesso-desktop');
+        autoHide('alert-sucesso-mobile');
+    })();
+</script>
+
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

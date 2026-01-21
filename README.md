@@ -1,4 +1,4 @@
-# Syncro!
+Syncro!
 
 O Syncro! é um sistema web desenvolvido em Java com Spring Boot, criado para auxiliar na gestão de veículos, peças e estoque em oficinas de chapeação e pintura.
 
@@ -6,7 +6,7 @@ O projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC) no curso T
 
 ---
 
-## Tecnologias utilizadas
+Tecnologias utilizadas
 - Java
 - Spring Boot
 - Spring MVC
@@ -18,7 +18,7 @@ O projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC) no curso T
 
 ---
 
-## Funcionalidades
+Funcionalidades
 - Autenticação de usuários com níveis de acesso
 - Cadastro, edição e baixa de veículos
 - Consulta por placa
@@ -29,11 +29,11 @@ O projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC) no curso T
 
 ---
 
-## Status do projeto
+Status do projeto
 Projeto concluído como TCC.  
 Possíveis evoluções podem ser realizadas conforme necessidade futura.
 
 ---
 
-## Telas do sistema
+Telas do sistema
 *(prints das telas serão adicionados futuramente)*

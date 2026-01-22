@@ -34,3 +34,8 @@ build/
 
 src/main/resources/application.properties
 
+# Uploads gerados pelo sistema
+upload/
+src/main/resources/static/images/
+
+

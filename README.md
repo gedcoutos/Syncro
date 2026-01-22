@@ -36,4 +36,29 @@ Possíveis evoluções podem ser realizadas conforme a necessidade futura.
 ---
 
 ## 📷 Telas do sistema
-*(prints das telas serão adicionados futuramente)*
+### Login
+![Login](screenshots/Login.png)
+
+### Home
+![Home](screenshots/Home.png)
+
+### Cadastro de veículo
+![Cadastro Veículo](screenshots/Registro.png)
+
+### Cadastro de peça
+![Cadastro Peça](screenshots/CadastroPç.png)
+
+### Consulta por placa
+![Consulta](screenshots/Consulta.png)
+
+### Informação do veículo
+![Veículo Info](screenshots/VeiculoInfo.png)
+
+### Estoque de peças
+![Peça Estoque](screenshots/PeçaEstoque.png)
+
+### Controle de boxes
+![Boxes](screenshots/Boxes.png)
+
+### Cadastro de funcionário
+![Cadastro Funcionário](screenshots/CadastroFuncionario.png)
